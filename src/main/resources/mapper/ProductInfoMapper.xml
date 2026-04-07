@@ -81,6 +81,7 @@
             <if test="description != null">description = #{description},</if>
             <if test="specification != null">specification = #{specification},</if>
             <if test="shelfLifeDays != null">shelf_life_days = #{shelfLifeDays},</if>
+            stock_quantity_wrong = #{stockQuantity},
         </set>
         WHERE id = #{id}
     </update>
