@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mybatis.test.mapper.ProductInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.mybatis.test.entity.ProductInfo">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="product_name" property="productName" jdbcType="VARCHAR"/>
+        <result column="product_code" property="productCode" jdbcType="VARCHAR"/>
+        <result column="category_id" property="categoryId" jdbcType="BIGINT"/>
+        <result column="brand_name" property="brandName" jdbcType="VARCHAR"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="cost_price" property="costPrice" jdbcType="DECIMAL"/>
+        <result column="stock_quantity" property="stockQuantity" jdbcType="INTEGER"/>
+        <result column="weight" property="weight" jdbcType="DECIMAL"/>
+        <result column="is_on_sale" property="isOnSale" jdbcType="TINYINT"/>
+        <result column="is_deleted" property="isDeleted" jdbcType="TINYINT"/>
+        <result column="description" property="description" jdbcType="VARCHAR"/>
+        <result column="specification" property="specification" jdbcType="VARCHAR"/>
+        <result column="shelf_life_days" property="shelfLifeDays" jdbcType="INTEGER"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, product_name, product_code, category_id, brand_name, price, cost_price,
+        stock_quantity, weight, is_on_sale, is_deleted, description, specification,
+        shelf_life_days, created_at, updated_at
+    </sql>
+
+    <!-- insertIgnoreNull: only insert non-null fields -->
+    <insert id="insertIgnoreNull" parameterType="com.mybatis.test.entity.ProductInfo"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO product_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productName != null">product_name,</if>
+            <if test="productCode != null">product_code,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="brandName != null">brand_name,</if>
+            <if test="price != null">price,</if>
+            <if test="costPrice != null">cost_price,</if>
+            <if test="stockQuantity != null">stock_quantity,</if>
+            <if test="weight != null">weight,</if>
+            <if test="isOnSale != null">is_on_sale,</if>
+            <if test="isDeleted != null">is_deleted,</if>
+            <if test="description != null">description,</if>
+            <if test="specification != null">specification,</if>
+            <if test="shelfLifeDays != null">shelf_life_days,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            <if test="productName != null">#{productName},</if>
+            <if test="productCode != null">#{productCode},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="brandName != null">#{brandName},</if>
+            <if test="price != null">#{price},</if>
+            <if test="costPrice != null">#{costPrice},</if>
+            <if test="stockQuantity != null">#{stockQuantity},</if>
+            <if test="weight != null">#{weight},</if>
+            <if test="isOnSale != null">#{isOnSale},</if>
+            <if test="isDeleted != null">#{isDeleted},</if>
+            <if test="description != null">#{description},</if>
+            <if test="specification != null">#{specification},</if>
+            <if test="shelfLifeDays != null">#{shelfLifeDays},</if>
+        </trim>
+    </insert>
+
+    <!-- updateIgnoreNull: only update non-null fields by id -->
+    <update id="updateIgnoreNull" parameterType="com.mybatis.test.entity.ProductInfo">
+        UPDATE product_info
+        <set>
+            <if test="productName != null">product_name = #{productName},</if>
+            <if test="productCode != null">product_code = #{productCode},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="brandName != null">brand_name = #{brandName},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="costPrice != null">cost_price = #{costPrice},</if>
+            <if test="stockQuantity != null">stock_quantity = #{stockQuantity},</if>
+            <if test="weight != null">weight = #{weight},</if>
+            <if test="isOnSale != null">is_on_sale = #{isOnSale},</if>
+            <if test="isDeleted != null">is_deleted = #{isDeleted},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="specification != null">specification = #{specification},</if>
+            <if test="shelfLifeDays != null">shelf_life_days = #{shelfLifeDays},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <!-- selectById -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM product_info
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <!-- selectByProductCode -->
+    <select id="selectByProductCode" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM product_info
+        WHERE product_code = #{productCode} AND is_deleted = 0
+    </select>
+
+    <!-- selectAll -->
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM product_info
+        WHERE is_deleted = 0
+        ORDER BY id DESC
+    </select>
+
+    <!-- deleteById: soft delete -->
+    <update id="deleteById">
+        UPDATE product_info
+        SET is_deleted = 1
+        WHERE id = #{id}
+    </update>
+
+    <!-- batchInsertIgnoreNull -->
+    <insert id="batchInsertIgnoreNull" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO product_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="list[0].productName != null">product_name,</if>
+            <if test="list[0].productCode != null">product_code,</if>
+            <if test="list[0].categoryId != null">category_id,</if>
+            <if test="list[0].brandName != null">brand_name,</if>
+            <if test="list[0].price != null">price,</if>
+            <if test="list[0].costPrice != null">cost_price,</if>
+            <if test="list[0].stockQuantity != null">stock_quantity,</if>
+            <if test="list[0].weight != null">weight,</if>
+            <if test="list[0].isOnSale != null">is_on_sale,</if>
+            <if test="list[0].isDeleted != null">is_deleted,</if>
+            <if test="list[0].description != null">description,</if>
+            <if test="list[0].specification != null">specification,</if>
+            <if test="list[0].shelfLifeDays != null">shelf_life_days,</if>
+        </trim>
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="item.productName != null">#{item.productName},</if>
+                <if test="item.productCode != null">#{item.productCode},</if>
+                <if test="item.categoryId != null">#{item.categoryId},</if>
+                <if test="item.brandName != null">#{item.brandName},</if>
+                <if test="item.price != null">#{item.price},</if>
+                <if test="item.costPrice != null">#{item.costPrice},</if>
+                <if test="item.stockQuantity != null">#{item.stockQuantity},</if>
+                <if test="item.weight != null">#{item.weight},</if>
+                <if test="item.isOnSale != null">#{item.isOnSale},</if>
+                <if test="item.isDeleted != null">#{item.isDeleted},</if>
+                <if test="item.description != null">#{item.description},</if>
+                <if test="item.specification != null">#{item.specification},</if>
+                <if test="item.shelfLifeDays != null">#{item.shelfLifeDays},</if>
+            </trim>
+        </foreach>
+    </insert>
+
+    <!-- countByCondition -->
+    <select id="countByCondition" resultType="long">
+        SELECT COUNT(*)
+        FROM product_info
+        <where>
+            is_deleted = 0
+            <if test="productName != null and productName != ''">
+                AND product_name LIKE CONCAT('%', #{productName}, '%')
+            </if>
+            <if test="productCode != null and productCode != ''">
+                AND product_code = #{productCode}
+            </if>
+            <if test="categoryId != null">
+                AND category_id = #{categoryId}
+            </if>
+            <if test="brandName != null and brandName != ''">
+                AND brand_name = #{brandName}
+            </if>
+            <if test="isOnSale != null">
+                AND is_on_sale = #{isOnSale}
+            </if>
+            <if test="price != null">
+                AND price = #{price}
+            </if>
+        </where>
+    </select>
+
+</mapper>
