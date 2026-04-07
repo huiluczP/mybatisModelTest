@@ -248,7 +248,7 @@ public class ReflectionTester {
                     true, "结果: " + result, duration);
 
         } catch (Exception e) {
-            long duration = System.currentTimeMillis();
+            long duration = System.currentTimeMillis() - start;
             String errorMsg = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
             log.error("[反射] {}.{} 失败: {}", mapperName, methodInfo.id, errorMsg, e);
             return new TestResult(mapperName, methodInfo, fallbackEntityClass, null,
