@@ -12,19 +12,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Parses a MyBatis Mapper XML file and extracts method names and their parameter types.
+ * 解析 MyBatis Mapper XML 文件，提取方法名和参数类型。
  */
 public class XMLMethodParser {
 
     private static final Logger log = LoggerFactory.getLogger(XMLMethodParser.class);
 
     /**
-     * Represents a parsed SQL method from a mapper XML.
+     * 从 Mapper XML 中解析出的 SQL 方法信息。
      */
     public static class MethodInfo {
         public final String id;
         public final String type; // insert/update/select/delete
-        public final String parameterType; // fully qualified class name, or null
+        public final String parameterType; // 全限定类名，或 null
 
         public MethodInfo(String id, String type, String parameterType) {
             this.id = id;
@@ -39,7 +39,7 @@ public class XMLMethodParser {
     }
 
     /**
-     * Parse a mapper XML file and return all SQL methods.
+     * 解析 Mapper XML 文件，返回所有 SQL 方法。
      */
     public static List<MethodInfo> parseMethods(File xmlFile) {
         List<MethodInfo> methods = new ArrayList<>();
@@ -64,7 +64,7 @@ public class XMLMethodParser {
     }
 
     /**
-     * Parse methods from a classpath resource path.
+     * 从 classpath 资源路径解析方法。
      */
     public static List<MethodInfo> parseFromResource(String resourcePath) {
         File file = new File(resourcePath);

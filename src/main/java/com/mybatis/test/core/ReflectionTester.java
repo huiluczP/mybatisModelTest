@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 /**
- * Uses reflection to instantiate PO entities with test data based on field types,
- * then invokes MyBatis mapper methods and records results.
+ * 使用反射根据字段类型生成测试数据填充 PO 实体，
+ * 然后调用 MyBatis Mapper 方法并记录结果。
  */
 public class ReflectionTester {
 
@@ -20,7 +20,7 @@ public class ReflectionTester {
     private static final String DEFAULT_ENTITY_PACKAGE = "com.mybatis.test.entity";
 
     /**
-     * Result of a single method test invocation.
+     * 单次方法测试调用的结果。
      */
     public static class TestResult {
         public final String mapperName;
@@ -44,15 +44,15 @@ public class ReflectionTester {
     }
 
     /**
-     * Resolve the entity class for a method.
-     * Priority: XML parameterType (FQN) > XML parameterType (alias) > POEntityRegistry inference.
+     * 为方法解析实体类。
+     * 优先级：XML parameterType(全限定名) > XML parameterType(别名) > POEntityRegistry 推断。
      */
     private static String resolveEntityClass(String xmlParameterType, String mapperName) {
-        // 1. XML parameterType - fully qualified class name
+        // 1. XML parameterType - 全限定类名
         if (xmlParameterType != null && xmlParameterType.contains(".")) {
             try {
                 Class<?> clazz = Class.forName(xmlParameterType);
-                // Skip non-entity types like java.util.List, java.lang.String, etc.
+                // 跳过非实体类型如 List、String 等
                 if (!isSimpleType(clazz) && !List.class.isAssignableFrom(clazz)
                         && !Map.class.isAssignableFrom(clazz)) {
                     return xmlParameterType;
@@ -61,7 +61,7 @@ public class ReflectionTester {
             }
         }
 
-        // 2. XML parameterType - treat as alias, try default entity package
+        // 2. XML parameterType - 作为别名处理，尝试默认实体包
         if (xmlParameterType != null && !xmlParameterType.isEmpty()) {
             String candidate = DEFAULT_ENTITY_PACKAGE + "." + capitalize(xmlParameterType);
             try {
@@ -71,7 +71,7 @@ public class ReflectionTester {
             }
         }
 
-        // 3. Fallback: name-based inference (ProductInfoMapper -> ProductInfo)
+        // 3. 兜底：基于名称推断 (ProductInfoMapper -> ProductInfo)
         String inferred = POEntityRegistry.getEntityClass(mapperName);
         if (inferred != null) {
             try {
@@ -85,7 +85,7 @@ public class ReflectionTester {
     }
 
     /**
-     * Check if a type is a simple/primitive/wrapper type (not a PO entity).
+     * 判断类型是否为简单/基本类型（非 PO 实体）。
      */
     private static boolean isSimpleType(Class<?> type) {
         return type.isPrimitive()
@@ -104,10 +104,10 @@ public class ReflectionTester {
     }
 
     /**
-     * Generate test argument value for a single method parameter.
+     * 为单个方法参数生成测试参数值。
      */
     private static Object generateTestArgument(Class<?> paramType, String entityClassName) {
-        // List<PO> -> create a list containing one test entity
+        // List<PO> -> 创建包含一个测试实体的列表
         if (List.class.isAssignableFrom(paramType)) {
             if (entityClassName != null) {
                 try {
@@ -116,19 +116,19 @@ public class ReflectionTester {
                     list.add(entity);
                     return list;
                 } catch (Exception e) {
-                    log.warn("[Reflection] Failed to create entity for List param, using empty list: {}", e.getMessage());
+                    log.warn("[反射] 为 List 参数创建实体失败，使用空列表: {}", e.getMessage());
                     return new ArrayList<>();
                 }
             }
             return new ArrayList<>();
         }
 
-        // Map param (e.g., for dynamic @Param) -> populate with test values
+        // Map 参数（如 @Param 动态参数）-> 返回空 Map
         if (Map.class.isAssignableFrom(paramType)) {
             return new HashMap<String, Object>();
         }
 
-        // If param type matches or is compatible with the entity class -> create filled entity
+        // 参数类型与实体类匹配 -> 创建填充的实体
         if (entityClassName != null) {
             try {
                 Class<?> entityClass = Class.forName(entityClassName);
@@ -136,16 +136,16 @@ public class ReflectionTester {
                     return createTestEntity(entityClassName);
                 }
             } catch (Exception e) {
-                // Class not found or entity creation failed, fall through to simple type
+                // 类未找到或实体创建失败，回退到简单类型
             }
         }
 
-        // Simple/primitive type -> generate based on type
+        // 简单/基本类型 -> 按类型生成
         return generateTestValue("param", paramType);
     }
 
     /**
-     * Populate a PO entity with test data based on field types.
+     * 根据字段类型生成测试数据填充 PO 实体。
      */
     public static Object createTestEntity(String className) throws Exception {
         Class<?> clazz = Class.forName(className);
@@ -159,12 +159,14 @@ public class ReflectionTester {
         return entity;
     }
 
+    private static final Random RANDOM = new Random();
+
     /**
-     * Generate a test value for a given field type.
+     * 根据字段类型生成测试值。
      */
     private static Object generateTestValue(String fieldName, Class<?> type) {
         if (type == String.class) {
-            return "[TEST]_" + fieldName;
+            return "[TEST]_" + fieldName + "_" + RANDOM.nextInt(100000);
         } else if (type == Long.class || type == long.class) {
             return System.currentTimeMillis() % 1_000_000L;
         } else if (type == Integer.class || type == int.class) {
@@ -192,17 +194,17 @@ public class ReflectionTester {
     }
 
     /**
-     * Invoke a single mapper method, building the correct arguments from method signature.
+     * 调用单个 Mapper 方法，从方法签名构建正确的参数。
      */
     public static TestResult testMethod(SqlSession session, String mapperName,
                                          MethodInfo methodInfo, String fallbackEntityClass) {
         try {
-            // Determine the mapper interface
+            // 确定 Mapper 接口
             String mapperClassName = "com.mybatis.test.mapper." + mapperName;
             Class<?> mapperClass = Class.forName(mapperClassName);
             Object mapper = session.getMapper(mapperClass);
 
-            // Find the method by id
+            // 按方法名查找
             Method targetMethod = null;
             for (Method m : mapperClass.getDeclaredMethods()) {
                 if (m.getName().equals(methodInfo.id)) {
@@ -213,59 +215,59 @@ public class ReflectionTester {
 
             if (targetMethod == null) {
                 return new TestResult(mapperName, methodInfo, fallbackEntityClass, null,
-                        false, "Method '" + methodInfo.id + "' not found in " + mapperClassName, 0);
+                        false, "方法 '" + methodInfo.id + "' 不存在于 " + mapperClassName, 0);
             }
 
-            // Resolve entity class: XML parameterType > name inference
+            // 解析实体类：XML parameterType > 名称推断
             String entityClassName = resolveEntityClass(methodInfo.parameterType, mapperName);
             if (entityClassName == null) {
                 entityClassName = fallbackEntityClass;
             }
 
-            // Build arguments based on actual method parameter types
+            // 根据实际方法参数类型构建参数
             Class<?>[] paramTypes = targetMethod.getParameterTypes();
             Object[] args = new Object[paramTypes.length];
 
             for (int i = 0; i < paramTypes.length; i++) {
                 args[i] = generateTestArgument(paramTypes[i], entityClassName);
-                log.debug("[Reflection] Param[{}] type={} -> value={}", i, paramTypes[i].getSimpleName(), args[i]);
+                log.debug("[反射] 参数[{}] 类型={} -> 值={}", i, paramTypes[i].getSimpleName(), args[i]);
             }
 
             Object firstArg = args.length > 0 ? args[0] : null;
-            log.info("[Reflection] Method {}.{} has {} param(s), entity={}",
+            log.info("[反射] 方法 {}.{} 有 {} 个参数，实体={}",
                     mapperName, methodInfo.id, paramTypes.length, entityClassName);
 
-            // Invoke the method
+            // 调用方法
             long start = System.currentTimeMillis();
             Object result = targetMethod.invoke(mapper, args);
             long duration = System.currentTimeMillis() - start;
 
-            log.info("[Reflection] Invoked {}.{} => result={}", mapperName, methodInfo.id, result);
+            log.info("[反射] 调用 {}.{} => 结果={}", mapperName, methodInfo.id, result);
 
             return new TestResult(mapperName, methodInfo, entityClassName, firstArg,
-                    true, "Result: " + result, duration);
+                    true, "结果: " + result, duration);
 
         } catch (Exception e) {
             long duration = System.currentTimeMillis();
             String errorMsg = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
-            log.error("[Reflection] Failed {}.{}: {}", mapperName, methodInfo.id, errorMsg, e);
+            log.error("[反射] {}.{} 失败: {}", mapperName, methodInfo.id, errorMsg, e);
             return new TestResult(mapperName, methodInfo, fallbackEntityClass, null,
-                    false, "ERROR: " + errorMsg, duration);
+                    false, "错误: " + errorMsg, duration);
         }
     }
 
     /**
-     * Test all methods for a given mapper XML.
+     * 测试指定 Mapper XML 的所有方法。
      */
     public static List<TestResult> testMapper(SqlSession session, String mapperName,
                                                List<MethodInfo> methods) {
         String entityClassName = POEntityRegistry.getEntityClass(mapperName);
         if (entityClassName == null) {
-            log.warn("[Reflection] No entity class found for mapper: {}", mapperName);
+            log.warn("[反射] 未找到 Mapper {} 对应的实体类", mapperName);
             return Collections.emptyList();
         }
 
-        log.info("[Reflection] Testing mapper: {} with entity: {}", mapperName, entityClassName);
+        log.info("[反射] 测试 Mapper: {}，实体: {}", mapperName, entityClassName);
 
         List<TestResult> results = new ArrayList<>();
         for (MethodInfo mi : methods) {

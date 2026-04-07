@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * ProductInfo entity corresponding to product_info table.
- * All fields use camelCase naming.
+ * 商品信息实体，对应 product_info 表。
+ * 所有字段使用驼峰命名。
  */
 public class ProductInfo {
 

@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * MyBatis SqlSessionFactory utility.
+ * MyBatis SqlSessionFactory 工具类。
  */
 public class MyBatisSessionFactory {
 

@@ -11,22 +11,22 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
- * Generates a test report in both console and HTML format.
+ * 生成控制台和 HTML 格式的测试报告。
  */
 public class ReportGenerator {
 
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
-     * Print a summary report to console log.
+     * 在控制台打印汇总报告。
      */
     public static void printConsoleReport(List<TestResult> results, String keyword) {
         String separator = repeatStr("=", 80);
         String dash = repeatStr("-", 80);
         System.out.println("\n" + separator);
-        System.out.println("  MyBatis Mapper Test Report");
+        System.out.println("  MyBatis Mapper 测试报告");
         System.out.println("  Keyword: " + keyword);
-        System.out.println("  Generated: " + LocalDateTime.now().format(FMT));
+        System.out.println("  生成时间: " + LocalDateTime.now().format(FMT));
         System.out.println(separator);
 
         int total = results.size();
@@ -41,22 +41,22 @@ public class ReportGenerator {
             String status = r.success ? "PASS" : "FAIL";
             System.out.printf("  [%d] [%s] %s.%s%n",
                     i + 1, status, r.mapperName, r.methodInfo.id);
-            System.out.printf("      Entity: %s%n", r.entityClass);
-            System.out.printf("      Duration: %d ms%n", r.durationMs);
+            System.out.printf("      实体类: %s%n", r.entityClass);
+            System.out.printf("      耗时: %d ms%n", r.durationMs);
             if (r.testEntity != null) {
-                System.out.printf("      Test Data: %s%n", r.testEntity);
+                System.out.printf("      测试数据: %s%n", r.testEntity);
             }
-            System.out.printf("      Message: %s%n", r.message);
+            System.out.printf("      信息: %s%n", r.message);
             System.out.println();
         }
 
         System.out.println(dash);
-        System.out.println("  SUMMARY: " + (failed == 0 ? "ALL PASSED" : failed + " TEST(S) FAILED"));
+        System.out.println("  汇总: " + (failed == 0 ? "全部通过" : failed + " 个测试失败"));
         System.out.println(separator + "\n");
     }
 
     /**
-     * Generate an HTML report file.
+     * 生成 HTML 报告文件。
      */
     public static String generateHtmlReport(List<TestResult> results, String keyword) throws IOException {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
@@ -93,14 +93,14 @@ public class ReportGenerator {
         String html = buildHtml(keyword, total, passed, failed, rows.toString());
         Files.writeString(reportPath, html);
         String absPath = reportPath.toAbsolutePath().toString();
-        System.out.println("[Report] HTML report generated: " + absPath);
+        System.out.println("[报告] HTML 报告已生成: " + absPath);
         return absPath;
     }
 
     private static String buildHtml(String keyword, int total, long passed, long failed, String rows) {
         StringBuilder sb = new StringBuilder();
         sb.append("<!DOCTYPE html><html><head><meta charset=\"UTF-8\">");
-        sb.append("<title>MyBatis Mapper Test Report</title>");
+        sb.append("<title>MyBatis Mapper 测试报告</title>");
         sb.append("<style>");
         sb.append("body{font-family:Arial,sans-serif;margin:20px;background:#f5f5f5}");
         sb.append(".container{max-width:1400px;margin:0 auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,.1)}");
@@ -115,8 +115,8 @@ public class ReportGenerator {
         sb.append("tr:hover{background:#f8f9fa}");
         sb.append(".meta{color:#666;font-size:14px;margin-bottom:10px}");
         sb.append("</style></head><body><div class=\"container\">");
-        sb.append("<h1>MyBatis Mapper Test Report</h1>");
-        sb.append("<p class=\"meta\">Keyword: <b>").append(escapeHtml(keyword)).append("</b> | Generated: ");
+        sb.append("<h1>MyBatis Mapper 测试报告</h1>");
+        sb.append("<p class=\"meta\">Keyword: <b>").append(escapeHtml(keyword)).append("</b> | 生成时间: ");
         sb.append(LocalDateTime.now().format(FMT)).append("</p>");
         sb.append("<div class=\"summary\">");
         sb.append("<div class=\"summary-card total\"><h3>").append(total).append("</h3><p>Total</p></div>");
@@ -124,8 +124,8 @@ public class ReportGenerator {
         sb.append("<div class=\"summary-card failed\"><h3>").append(failed).append("</h3><p>Failed</p></div>");
         sb.append("</div>");
         sb.append("<table><tr>");
-        sb.append("<th>#</th><th>Mapper</th><th>Method</th><th>Entity</th>");
-        sb.append("<th>Type</th><th>Test Data</th><th>Status</th><th>Duration</th><th>Message</th>");
+        sb.append("<th>#</th><th>Mapper</th><th>方法</th><th>实体</th>");
+        sb.append("<th>类型</th><th>测试数据</th><th>状态</th><th>耗时</th><th>信息</th>");
         sb.append("</tr>");
         sb.append(rows);
         sb.append("</table></div></body></html>");

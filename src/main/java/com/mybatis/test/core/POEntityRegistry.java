@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Reads entity class overrides from entity-mapping.properties,
- * then falls back to auto-inference: {MapperName}Mapper.xml → com.mybatis.test.entity.{MapperName}
+ * 从 entity-mapping.properties 读取实体类覆盖配置，
+ * 兜底自动推断：{MapperName}Mapper.xml → com.mybatis.test.entity.{MapperName}
  */
 public class POEntityRegistry {
 
@@ -33,10 +33,10 @@ public class POEntityRegistry {
     }
 
     /**
-     * Resolve mapper file name to fully-qualified entity class.
+     * 将 Mapper 文件名解析为实体类全限定名。
      *
-     * @param mapperName e.g. "ProductInfoMapper"
-     * @return class name or null
+     * @param mapperName 如 "ProductInfoMapper"
+     * @return 类名或 null
      */
     public static String getEntityClass(String mapperName) {
         if (mapperName == null || mapperName.isEmpty()) return null;
@@ -56,14 +56,14 @@ public class POEntityRegistry {
     }
 
     /**
-     * Check if a mapper has a resolvable entity.
+     * 检查 Mapper 是否有可解析的实体。
      */
     public static boolean hasEntity(String mapperName) {
         return getEntityClass(mapperName) != null;
     }
 
     /**
-     * Register or override at runtime.
+     * 运行时注册或覆盖映射。
      */
     public static void register(String mapperName, String entityClassName) {
         overrides.put(mapperName, entityClassName);

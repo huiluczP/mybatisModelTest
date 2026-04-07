@@ -6,47 +6,47 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * ProductInfo MyBatis Mapper interface.
+ * 商品信息 MyBatis Mapper 接口。
  */
 public interface ProductInfoMapper {
 
     /**
-     * Insert a record, ignoring null fields.
+     * 插入记录，忽略 null 字段。
      */
     int insertIgnoreNull(ProductInfo record);
 
     /**
-     * Update a record by primary key, ignoring null fields.
+     * 按主键更新记录，忽略 null 字段。
      */
     int updateIgnoreNull(ProductInfo record);
 
     /**
-     * Select by primary key.
+     * 按主键查询。
      */
     ProductInfo selectById(@Param("id") Long id);
 
     /**
-     * Select by product code.
+     * 按商品编码查询。
      */
     ProductInfo selectByProductCode(@Param("productCode") String productCode);
 
     /**
-     * Select all records.
+     * 查询所有记录。
      */
     List<ProductInfo> selectAll();
 
     /**
-     * Delete by primary key (soft delete).
+     * 按主键删除（软删除）。
      */
     int deleteById(@Param("id") Long id);
 
     /**
-     * Batch insert, ignoring null fields.
+     * 批量插入，忽略 null 字段。
      */
     int batchInsertIgnoreNull(@Param("list") List<ProductInfo> list);
 
     /**
-     * Count records by condition.
+     * 按条件计数。
      */
     long countByCondition(ProductInfo condition);
 }

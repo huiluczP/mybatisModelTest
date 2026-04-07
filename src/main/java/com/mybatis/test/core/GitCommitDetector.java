@@ -23,15 +23,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Scans git commit history for commits whose message contains a keyword,
- * and collects the paths of modified MyBatis XML mapper files.
+ * 扫描 Git 提交历史，查找 message 包含关键词的提交，
+ * 并收集被修改的 MyBatis XML Mapper 文件路径。
  */
 public class GitCommitDetector {
 
     private static final Logger log = LoggerFactory.getLogger(GitCommitDetector.class);
 
     /**
-     * Find all commits whose message contains the keyword, returning the list of RevCommit.
+     * 查找所有 message 包含关键词的提交，返回 RevCommit 列表。
      */
     public static List<RevCommit> findCommitsByKeyword(String repoPath, String keyword) throws IOException {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
@@ -44,19 +44,19 @@ public class GitCommitDetector {
                 String message = commit.getFullMessage();
                 if (message.contains(keyword)) {
                     result.add(commit);
-                    log.info("[Git] Found commit: {} | {}", commit.getName().substring(0, 8), message.trim());
+                    log.info("[Git] 匹配提交: {} | {}", commit.getName().substring(0, 8), message.trim());
                 }
             }
         } catch (Exception e) {
             throw new IOException("Failed to scan git log in: " + repoPath, e);
         }
 
-        log.info("[Git] Found {} commits containing keyword '{}'", result.size(), keyword);
+        log.info("[Git] 找到 {} 条包含关键词 '{}' 的提交", result.size(), keyword);
         return result;
     }
 
     /**
-     * Get all modified XML file paths from a commit using JGit DiffFormatter.
+     * 使用 DiffFormatter 获取提交中修改的所有 XML 文件路径。
      */
     public static Set<String> getModifiedFiles(Repository repo, RevCommit commit) throws Exception {
         Set<String> xmlFiles = new HashSet<>();
@@ -88,8 +88,7 @@ public class GitCommitDetector {
     }
 
     /**
-     * Get all modified MyBatis XML mapper files from a commit.
-     * Filters to files ending with "Mapper.xml".
+     * 获取提交中修改的 MyBatis XML Mapper 文件，过滤以 Mapper.xml 结尾的文件。
      */
     public static List<String> getModifiedMapperXmls(Repository repo, RevCommit commit) throws Exception {
         Set<String> modifiedFiles = getModifiedFiles(repo, commit);
@@ -99,7 +98,7 @@ public class GitCommitDetector {
     }
 
     /**
-     * Open a git repository from path.
+     * 从路径打开 Git 仓库。
      */
     public static Repository openRepository(String repoPath) throws IOException {
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
