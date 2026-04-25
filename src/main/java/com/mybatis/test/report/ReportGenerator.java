@@ -43,7 +43,10 @@ public class ReportGenerator {
                     i + 1, status, r.mapperName, r.methodInfo.id);
             System.out.printf("      实体类: %s%n", r.entityClass);
             System.out.printf("      耗时: %d ms%n", r.durationMs);
-            if (r.testEntity != null) {
+            if (r.testArgs != null && r.testArgs.length > 0) {
+                String testData = formatTestArgs(r.testArgs);
+                System.out.printf("      测试数据: %s%n", testData);
+            } else if (r.testEntity != null) {
                 System.out.printf("      测试数据: %s%n", r.testEntity);
             }
             System.out.printf("      信息: %s%n", r.message);
@@ -73,9 +76,14 @@ public class ReportGenerator {
             TestResult r = results.get(i);
             String statusColor = r.success ? "#28a745" : "#dc3545";
             String statusText = r.success ? "PASS" : "FAIL";
-            String testData = r.testEntity != null
-                    ? escapeHtml(r.testEntity.toString())
-                    : "N/A";
+            String testData;
+            if (r.testArgs != null && r.testArgs.length > 0) {
+                testData = escapeHtml(formatTestArgs(r.testArgs));
+            } else if (r.testEntity != null) {
+                testData = escapeHtml(r.testEntity.toString());
+            } else {
+                testData = "N/A";
+            }
             rows.append("<tr>")
                     .append("<td>").append(i + 1).append("</td>")
                     .append("<td>").append(escapeHtml(r.mapperName)).append("</td>")
@@ -135,6 +143,19 @@ public class ReportGenerator {
     private static String repeatStr(String s, int n) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++) sb.append(s);
+        return sb.toString();
+    }
+
+    /**
+     * 格式化所有测试参数为可读字符串。
+     */
+    private static String formatTestArgs(Object[] args) {
+        if (args == null || args.length == 0) return "";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < args.length; i++) {
+            if (i > 0) sb.append("; ");
+            sb.append("args[").append(i).append("]=").append(args[i]);
+        }
         return sb.toString();
     }
 

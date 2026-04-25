@@ -49,4 +49,9 @@ public interface ProductInfoMapper {
      * 按条件计数。
      */
     long countByCondition(ProductInfo condition);
+
+    /**
+     * 按主键和商品编码查询。
+     */
+    ProductInfo selectByIdAndProductCode(@Param("id") Long id, @Param("productCode") String productCode);
 }

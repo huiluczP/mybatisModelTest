@@ -27,6 +27,7 @@ public class ReflectionTester {
         public final MethodInfo methodInfo;
         public final String entityClass;
         public final Object testEntity;
+        public final Object[] testArgs;
         public final boolean success;
         public final String message;
         public final long durationMs;
@@ -37,6 +38,19 @@ public class ReflectionTester {
             this.methodInfo = methodInfo;
             this.entityClass = entityClass;
             this.testEntity = testEntity;
+            this.testArgs = null;
+            this.success = success;
+            this.message = message;
+            this.durationMs = durationMs;
+        }
+
+        public TestResult(String mapperName, MethodInfo methodInfo, String entityClass,
+                          Object testEntity, Object[] testArgs, boolean success, String message, long durationMs) {
+            this.mapperName = mapperName;
+            this.methodInfo = methodInfo;
+            this.entityClass = entityClass;
+            this.testEntity = testEntity;
+            this.testArgs = testArgs;
             this.success = success;
             this.message = message;
             this.durationMs = durationMs;
@@ -198,6 +212,7 @@ public class ReflectionTester {
      */
     public static TestResult testMethod(SqlSession session, String mapperName,
                                          MethodInfo methodInfo, String fallbackEntityClass) {
+        long start = 0;
         try {
             // 确定 Mapper 接口
             String mapperClassName = "com.mybatis.test.mapper." + mapperName;
@@ -238,13 +253,13 @@ public class ReflectionTester {
                     mapperName, methodInfo.id, paramTypes.length, entityClassName);
 
             // 调用方法
-            long start = System.currentTimeMillis();
+            start = System.currentTimeMillis();
             Object result = targetMethod.invoke(mapper, args);
             long duration = System.currentTimeMillis() - start;
 
             log.info("[反射] 调用 {}.{} => 结果={}", mapperName, methodInfo.id, result);
 
-            return new TestResult(mapperName, methodInfo, entityClassName, firstArg,
+            return new TestResult(mapperName, methodInfo, entityClassName, firstArg, args,
                     true, "结果: " + result, duration);
 
         } catch (Exception e) {

@@ -180,4 +180,11 @@
         </where>
     </select>
 
+    <!-- selectByIdAndProductCode: multi-parameter method -->
+    <select id="selectByIdAndProductCode" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM product_info
+        WHERE id = #{id} AND product_code = #{productCode} AND is_deleted = 0
+    </select>
+
 </mapper>
